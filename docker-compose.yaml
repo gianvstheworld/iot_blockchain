@@ -1,0 +1,60 @@
+services:
+  ganache:
+    image: trufflesuite/ganache-cli
+    ports:
+      - "8545:8545"
+    networks:
+      - blockchain-network
+    command: >
+      --accounts 10
+      --defaultBalanceEther 1000
+      --chainId 1337
+      --mnemonic "gloom slide fashion security recycle rocket luxury jeans token that suspect media parent"
+    environment:
+      MNEMONIC: "gloom slide fashion security recycle rocket luxury jeans token that suspect media parent"
+
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - blockchain-network
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+
+  hardhat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - blockchain-network
+    environment:
+      NODE_ENV: development
+    command: npx hardhat run scripts/deploy.js --network ganache
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+      - /app/node_modules 
+    working_dir: /app
+    networks:
+      - blockchain-network
+    environment:
+      PRIVATE_KEY: "0x44b126918c1cfd46c72a483366850432fe1aaf779dec01614be1a697774e190d"
+      CONTRACT_ADDRESS: "0xC3E54766921A9343a99704296dB29a4aD0Ec0590"
+      RPC_URL: "http://ganache:8545"
+      PORT: "3001"
+    ports:
+      - "3001:3001"
+    command: ["node", "index.js"]
+
+networks:
+  blockchain-network:
+    driver: bridge
