@@ -59,6 +59,22 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento:
 
 1. **Clone o repositório**:
 
-   ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+    ```bash
+    git clone https://github.com/gianvstheworld/iot_blockchain
+    cd iot_blockchain
+    ```
+
+2. **No diretório principal, execute o seguinte**:
+
+    ```bash
+    docker compose up --build
+    ```
+
+3. **Em outro terminal, finalize com os seguintes comandos**:
+
+    ```bash
+    docker compose restart hardhat 
+    python3 device_simulator.py
+    ```
+
+Por fim, basta verificar os dispositivos no [link](http://localhost:3001/).
